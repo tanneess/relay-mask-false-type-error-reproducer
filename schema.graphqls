@@ -1,0 +1,59 @@
+schema {
+    query: Query
+    mutation: Mutation
+}
+
+interface Node{
+    id:ID!
+}
+
+type Query {
+    node(id:ID!):Node
+}
+
+
+type Mutation{
+    createFriend(ownerId:ID!):Friend
+    createFriendRelay(input:CreateFriendInput!): CreateFriendOutput
+}
+
+type User implements Node{
+    id:ID!,
+    name:String!,
+    email:String!,
+    friends(before:ID,after:ID,first:Int): FriendConnection!
+}
+
+type Friend implements Node {
+    id:ID!
+    owner:User!
+    target:User!
+}
+
+type PageInfo{
+    startCursor: ID!
+    endCursor:ID!
+    hasNextPage:Boolean!
+    hasPreviousPage:Boolean!
+}
+
+type FriendConnection {
+    edges: [FriendEdge!]!,
+    pageInfo: PageInfo!
+}
+
+type FriendEdge {
+    node: Friend!,
+    cursor: ID!,
+}
+
+
+input CreateFriendInput{
+    clientMutationId:String!
+    ownerId:ID!
+}
+
+type CreateFriendOutput{
+    clientMutationId:String!,
+    friendEdge:FriendEdge!
+}
